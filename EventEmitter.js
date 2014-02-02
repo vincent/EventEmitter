@@ -5,6 +5,8 @@
  * @preserve
  */
 
+var now = require('performance-now');
+
 (function () {
 	'use strict';
 
@@ -381,7 +383,7 @@
 
 					if (this.report) {
 
-						start = Date.now();
+						start = now();
 
 						response = listener.listener.apply(this, args || empty);
 
@@ -403,6 +405,63 @@
 	};
 
 	/**
+	 * Emits an event of your choice.
+	 * When emitted, every listener attached to that event will be executed.
+	 * If you pass the optional argument array then those arguments will be passed to every listener upon execution.
+	 * Because it uses `apply`, your array of arguments will be passed as if you wrote them out separately.
+	 * So they will not arrive within the array on the other side, they will be separate.
+	 * You can also pass a regular expression to emit to all events that match it.
+	 *
+	 * @param {String|RegExp} evt Name of the event to emit and execute listeners for.
+	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
+	 * @return {Object} Current instance of EventEmitter for chaining.
+	 */
+	proto.emitEvent = function emitEventWithConstraints(constraints, evt, args) {
+		var listeners = this.getListenersAsObject(evt);
+		var listener;
+		var i;
+		var key;
+		var response;
+		var empty = [];
+		var start = now();
+		var innerStart = 0;
+
+		for (key in listeners) {
+			if (listeners.hasOwnProperty(key)) {
+				i = listeners[key].length;
+
+				while (i--) {
+					// If the listener returns true then it shall be removed from the event
+					// The function is executed either with a basic call or an apply if there is an args array
+					listener = listeners[key][i];
+
+					if (listener.once === true) {
+						this.removeListener(evt, listener.listener);
+					}
+
+					innerStart = now();
+
+					response = listener.listener.apply(this, args || empty);
+
+					if (now() - innerStart > constraints.each) {
+						throw 'Last listener call took more than ' + constraints.each + 'ms'; 
+					}
+
+					if (response === this._getOnceReturnValue()) {
+						this.removeListener(evt, listener.listener);
+					}
+				}
+			}
+		}
+
+		if (now() - start > constraints.total) {
+			throw 'Overall emit call took more than ' + constraints.total + 'ms'; 
+		}
+
+		return this;
+	};
+
+	/**
 	 * Alias of emitEvent
 	 */
 	proto.trigger = alias('emitEvent');
@@ -418,6 +477,18 @@
 	proto.emit = function emit(evt) {
 		var args = Array.prototype.slice.call(arguments, 1);
 		return this.emitEvent(evt, args);
+	};
+
+	proto.emitWithConstraints = function emit(constraints, evt) {
+		try {
+			var args = Array.prototype.slice.call(arguments, 1);
+			return this.emitEventWithConstraints(evt, args);
+		} catch (e) {
+			if (constraints.debug) {
+				console && console.warn(e);
+				debugger;
+			}
+		} 
 	};
 
 	/**
@@ -448,16 +519,6 @@
 		else {
 			return true;
 		}
-	};
-
-	/**
-	 * Set the reporting function.
-	 *
-	 * @return {Function} The reporting function.
-	 */
-	proto.setReport = function setReport(reportFunction) {
-		this.report = reportFunction;
-		return this;
 	};
 
 	/**
