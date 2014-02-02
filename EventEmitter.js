@@ -5,8 +5,6 @@
  * @preserve
  */
 
-var now = require('performance-now');
-
 (function () {
 	'use strict';
 
@@ -383,9 +381,9 @@ var now = require('performance-now');
 
 					if (this.report && listener.listener.listenerTag) {
 
-						start = now();
+						start = Date.now();
 						response = listener.listener.apply(this, args || empty);
-						this.report(listener.listener.listenerTag, (now()-start).toFixed(5));
+						this.report(listener.listener.listenerTag, (Date.now()-start).toFixed(5));
 
 					} else if (this.report) {
 

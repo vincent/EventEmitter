@@ -36,6 +36,5 @@
     "dustjs-helpers": "*"
   },
   "dependencies": {
-    "performance-now": "~0.1.3"
   }
 }
