@@ -447,6 +447,7 @@ var now = require('performance-now');
 					innerEach = now() - innerStart;
 					if (innerEach > constraints.each) {
 						console.warn('Last listener call took more than ' + constraints.each + 'ms (' + (innerEach) + ')'); 
+						constraints.debug && debugger;
 					}
 
 					if (response === this._getOnceReturnValue()) {
@@ -457,7 +458,8 @@ var now = require('performance-now');
 		}
 
 		if (now() - start > constraints.total) {
-			console.warn('Overall emit call took more than ' + constraints.total + 'ms (' + (now() - start) + ')'); 
+			console.warn('Overall emit call took more than ' + constraints.total + 'ms (' + (now() - start) + ')');
+			constraints.debug && debugger;
 		}
 
 		return this;
