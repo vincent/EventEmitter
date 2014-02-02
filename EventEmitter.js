@@ -379,16 +379,14 @@
 						this.removeListener(evt, listener.listener);
 					}
 
-					if (this.report && listener.listener.listenerTag) {
+					if (this.report) {
 
 						start = Date.now();
+
 						response = listener.listener.apply(this, args || empty);
-						this.report(listener.listener.listenerTag, (Date.now()-start).toFixed(5));
 
-					} else if (this.report) {
-
-						debugger;
-
+						this.report(listener.listener.listenerTag || ('a "' + evt + '" listener') , (Date.now()-start).toFixed(5));
+					
 					} else {
 
 						response = listener.listener.apply(this, args || empty);
