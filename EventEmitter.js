@@ -381,11 +381,15 @@ var now = require('performance-now');
 						this.removeListener(evt, listener.listener);
 					}
 
-					if (this.report) {
+					if (this.report && listener.listener.listenerTag) {
 
 						start = now();
 						response = listener.listener.apply(this, args || empty);
 						this.report(listener.listener.listenerTag, (now()-start).toFixed(5));
+
+					} else if (this.report) {
+
+						debugger;
 
 					} else {
 
