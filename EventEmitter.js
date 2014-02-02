@@ -381,11 +381,16 @@ var now = require('performance-now');
 						this.removeListener(evt, listener.listener);
 					}
 
-					start = now();
+					if (this.report) {
 
-					response = listener.listener.apply(this, args || empty);
+						start = now();
+						response = listener.listener.apply(this, args || empty);
+						this.report(listener.listener.listenerTag, (now()-start).toFixed(5));
 
-					this.report(listener.listener.listenerTag, (now()-start).toFixed(5));
+					} else {
+
+						response = listener.listener.apply(this, args || empty);
+					}
 
 					if (response === this._getOnceReturnValue()) {
 						this.removeListener(evt, listener.listener);
