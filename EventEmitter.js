@@ -385,7 +385,7 @@ var now = require('performance-now');
 
 					response = listener.listener.apply(this, args || empty);
 
-					this.report(listener.listsener.listenerTag, (now()-start).toFixed(5));
+					this.report(listener.listener.listenerTag, (now()-start).toFixed(5));
 
 					if (response === this._getOnceReturnValue()) {
 						this.removeListener(evt, listener.listener);
