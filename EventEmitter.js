@@ -481,7 +481,7 @@ var now = require('performance-now');
 
 	proto.emitWithConstraints = function emit(constraints, evt) {
 		try {
-			var args = Array.prototype.slice.call(arguments, 1);
+			var args = Array.prototype.slice.call(arguments, 2);
 			return this.emitEventWithConstraints(evt, args);
 		} catch (e) {
 			if (constraints.debug) {
