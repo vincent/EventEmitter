@@ -5,6 +5,8 @@
  * @preserve
  */
 
+var now = require('performance-now');
+
 (function () {
 	'use strict';
 
@@ -363,6 +365,8 @@
 		var i;
 		var key;
 		var response;
+		var start;
+		var empty = [];
 
 		for (key in listeners) {
 			if (listeners.hasOwnProperty(key)) {
@@ -377,7 +381,11 @@
 						this.removeListener(evt, listener.listener);
 					}
 
-					response = listener.listener.apply(this, args || []);
+					start = now();
+
+					response = listener.listener.apply(this, args || empty);
+
+					this.report(listener.listsener.listenerTag, (now()-start).toFixed(5));
 
 					if (response === this._getOnceReturnValue()) {
 						this.removeListener(evt, listener.listener);
@@ -435,6 +443,16 @@
 		else {
 			return true;
 		}
+	};
+
+	/**
+	 * Set the reporting function.
+	 *
+	 * @return {Function} The reporting function.
+	 */
+	proto.setReport = function setReport(reportFunction) {
+		this.report = reportFunction;
+		return this;
 	};
 
 	/**
