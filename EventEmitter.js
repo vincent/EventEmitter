@@ -416,7 +416,7 @@ var now = require('performance-now');
 	 * @param {Array} [args] Optional array of arguments to be passed to each listener.
 	 * @return {Object} Current instance of EventEmitter for chaining.
 	 */
-	proto.emitEvent = function emitEventWithConstraints(constraints, evt, args) {
+	proto.emitEventWithConstraints = function emitEventWithConstraints(constraints, evt, args) {
 		var listeners = this.getListenersAsObject(evt);
 		var listener;
 		var i;
