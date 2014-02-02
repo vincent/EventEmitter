@@ -446,7 +446,7 @@ var now = require('performance-now');
 
 					innerEach = now() - innerStart;
 					if (innerEach > constraints.each) {
-						throw 'Last listener call took more than ' + constraints.each + 'ms (' + (innerEach) + ')'; 
+						console.warn('Last listener call took more than ' + constraints.each + 'ms (' + (innerEach) + ')'); 
 					}
 
 					if (response === this._getOnceReturnValue()) {
@@ -457,7 +457,7 @@ var now = require('performance-now');
 		}
 
 		if (now() - start > constraints.total) {
-			throw 'Overall emit call took more than ' + constraints.total + 'ms (' + (now() - start) + ')'; 
+			console.warn('Overall emit call took more than ' + constraints.total + 'ms (' + (now() - start) + ')'); 
 		}
 
 		return this;
@@ -482,15 +482,8 @@ var now = require('performance-now');
 	};
 
 	proto.emitWithConstraints = function emit(constraints, evt) {
-		try {
-			var args = Array.prototype.slice.call(arguments, 2);
-			return this.emitEventWithConstraints(constraints, evt, args);
-		} catch (e) {
-			if (constraints.debug) {
-				console && console.warn(e);
-				debugger;
-			}
-		} 
+		var args = Array.prototype.slice.call(arguments, 2);
+		return this.emitEventWithConstraints(constraints, evt, args);
 	};
 
 	/**
