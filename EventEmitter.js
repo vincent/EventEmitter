@@ -425,6 +425,7 @@ var now = require('performance-now');
 		var empty = [];
 		var start = now();
 		var innerStart = 0;
+		var innerEach = 0;
 
 		for (key in listeners) {
 			if (listeners.hasOwnProperty(key)) {
@@ -443,8 +444,9 @@ var now = require('performance-now');
 
 					response = listener.listener.apply(this, args || empty);
 
-					if (now() - innerStart > constraints.each) {
-						throw 'Last listener call took more than ' + constraints.each + 'ms'; 
+					innerEach = now() - innerStart;
+					if (innerEach > constraints.each) {
+						throw 'Last listener call took more than ' + constraints.each + 'ms (' + (innerEach) + ')'; 
 					}
 
 					if (response === this._getOnceReturnValue()) {
@@ -455,7 +457,7 @@ var now = require('performance-now');
 		}
 
 		if (now() - start > constraints.total) {
-			throw 'Overall emit call took more than ' + constraints.total + 'ms'; 
+			throw 'Overall emit call took more than ' + constraints.total + 'ms (' + (now() - start) + ')'; 
 		}
 
 		return this;
